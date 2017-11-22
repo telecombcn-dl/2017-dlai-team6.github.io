@@ -1,0 +1,9 @@
+First steps:
+ - Dar un vistazo al codigo de pacman
+ - Probar a lanzar ejecuciones del codigo original para familiarizarse con el
+ - Hacer pequeños cambios (y documentarlos minimamente) en la arquitectura del modelo
+ 
+Meeting miercoles 29 tarde
+  - Montar sistema en google cloud
+  - Propuestas e implementacion de nuevas arquitecturas de modelos
+  - Dejar programas corriendo en cloud
