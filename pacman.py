@@ -2,11 +2,11 @@ import random
 import os
 import operator
 import gym
-from skimage import io, color, transform
+from scikit-image import io, color, transform
 import numpy as np
 import random
 from keras.models import Sequential
-from keras.layers import Dense,MaxPooling2D,Conv2D,Flatten
+from keras.layers import Dense, MaxPooling2D, Conv2D, Flatten
 from keras.optimizers import Adam
 from collections import deque
 import matplotlib.pyplot as plt
@@ -65,13 +65,13 @@ class Agent:
         Helper function for preprocessing an observation for consumption by our
         deep learning network
         """
-#         print(observation.shape)
+        #print(observation.shape)
         grayscale_observation = color.rgb2gray(observation)
-#         print(grayscale_observation.shape) (210,160)
+        #print(grayscale_observation.shape) (210,160)
         resized_observation = transform.resize(grayscale_observation, (1, self.preprocess_image_dim, self.preprocess_image_dim)).astype('float32')
         if prediction:
             resized_observation = np.expand_dims(resized_observation, 0)
-#         print(resized_observation.shape) (1,84,84)
+        #print(resized_observation.shape) (1,84,84)
         return resized_observation
 
     def take_action(self, observation):
@@ -82,7 +82,7 @@ class Agent:
         observation = np.array(observation)
         observation = np.reshape(observation, [1,1,self.preprocess_image_dim,self.preprocess_image_dim])
 
-#         print(observation.shape) (1,84,84)
+        #print(observation.shape) (1,84,84)
         if (np.random.rand() <= self.epsilon):
             action = random.randrange(self.action_size)
             return action
@@ -164,13 +164,14 @@ def run_simulation():
     # TOT_FRAMES = 0  # Counter of frames covered till now
 
     for i_episode in range(NUM_EPISODES):
-        OBS = ENV.reset()
+        obs = ENV.reset()
         EPISODE_REWARD = 0
         time = 0
+        obsProc = agent.preprocess_observation(obs)
 
         while True:
             # ENV.render()
-            OBS = agent.preprocess_observation(OBS)
+            # OBS = agent.preprocess_observation(OBS)
             # ensure that S_LIST is populated with PHI_LENGTH frames
             """
             if TOT_FRAMES < PHI_LENGTH:
@@ -178,30 +179,30 @@ def run_simulation():
                 TOT_FRAMES += 1
                 continue
             """
-#             X = np.array(S_LIST)
-#             print(X.shape) #(4,1,84,84)
+            #X = np.array(S_LIST)
+            #print(X.shape) #(4,1,84,84)
 
             # call take_action
-            ACTION = agent.take_action(OBS)
-#             print(ACTION)
+            ACTION = agent.take_action(obsProc)
+            #print(ACTION)
 
-            NEXT_OBS, REWARD, DONE, INFO = ENV.step(ACTION) # NEXT_OBS is a numpy.ndarray of shape(210,160,3)
+            newObs, REWARD, DONE, INFO = ENV.step(ACTION) # NEXT_OBS is a numpy.ndarray of shape(210,160,3)
 
             # LIVES = LIVES.get('ale.lives')
             # Calculation of Reward
 
-#             if (time%50==0):
-#                 print(REWARD)
+            #if (time%50==0):
+                #print(REWARD)
 
-#             print(NEXT_OBS, REWARD, DONE,'\n\n\n\n\n\n\n\n')
-            NEXT_OBS = agent.preprocess_observation(NEXT_OBS) # shape(1,84,84)
+            #print(NEXT_OBS, REWARD, DONE,'\n\n\n\n\n\n\n\n')
+            newObsProc = agent.preprocess_observation(newObs) # shape(1,84,84)
 
-            EREG = [OBS, ACTION, REWARD, NEXT_OBS, DONE]
-#             print(EREG)
+            EREG = [obsProc, ACTION, REWARD, newObsProc, DONE]
+            #print(EREG)
 
             agent.append_experience_replay_example(EREG)
 
-            OBS = NEXT_OBS
+            obsProc = newObsProc
             if DONE:
                 print("episode:{}/{}, score: {}, e = {}".format(i_episode, NUM_EPISODES, EPISODE_REWARD, agent.epsilon))
                 break
