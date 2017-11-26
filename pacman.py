@@ -2,7 +2,7 @@ import random
 import os
 import operator
 import gym
-from scikit-image import io, color, transform
+from skimage import io, color, transform
 import numpy as np
 import random
 from keras.models import Sequential
@@ -12,7 +12,7 @@ from collections import deque
 import matplotlib.pyplot as plt
 
 class Agent:
-#
+        #
     def __init__(self,action_size,epsilon=1.0,experience_replay_capacity=1000,minibatch_size=32,learning_rate=0.01,gamma=0.95,preprocess_image_dim=84):
         self.action_size = action_size
         self.epsilon = epsilon
