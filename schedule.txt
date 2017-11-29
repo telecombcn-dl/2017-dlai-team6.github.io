@@ -7,3 +7,18 @@ Meeting miercoles 29 tarde
   - Montar sistema en google cloud
   - Propuestas e implementacion de nuevas arquitecturas de modelos
   - Dejar programas corriendo en cloud
+  
+
+Propuesta:
+
+ - Cada uno nos hacemos un modelo haciendo modificaciones al script actual.
+ - Hacemos cada uno un esquema y una breve explicacion/justificacion del modelo
+ - Extraemos las metricas, habra que mirar si se puede usar tensor board
+ - Sacamos conclusiones comparandolos con las metricas/resultados del script original
+ (¿8 horas aprox cada?)
+ 
+ 
+ - El día que quedemos juntamos todos los modelos en un archivo
+ - Hacemos una pequeña intro explicando el trabajo
+ -Juntamos las graficas de las metricas y las graficas de los resultados
+ -Conclusiones generales
