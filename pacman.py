@@ -107,7 +107,7 @@ class Agent:
             self.model.fit(obs, target_f, epochs=1, verbose=0)
         if (self.epsilon > self.epsilon_min):
             self.epsilon *= self.epsilon_decay
-
+    
 #####
 # Hyperparameters
 #####
@@ -170,7 +170,7 @@ def run_simulation():
         obsProc = agent.preprocess_observation(obs)
 
         while True:
-            # ENV.render()
+            ENV.render()
             # OBS = agent.preprocess_observation(OBS)
             # ensure that S_LIST is populated with PHI_LENGTH frames
             """
@@ -187,7 +187,10 @@ def run_simulation():
             #print(ACTION)
 
             newObs, REWARD, DONE, INFO = ENV.step(ACTION) # NEXT_OBS is a numpy.ndarray of shape(210,160,3)
-
+            #print(env.action_space)
+            #print(env.observation_space)
+            #print(env.observation_space.high)
+            #print(env.observation_space.low)
             # LIVES = LIVES.get('ale.lives')
             # Calculation of Reward
 
