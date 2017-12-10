@@ -10,7 +10,6 @@ from keras.layers import Dense, MaxPooling2D, Conv2D, Flatten
 from keras.optimizers import Adam
 from collections import deque
 import matplotlib.pyplot as plt
-from keras.utils import multi_gpu_model
 
 class Agent:
         #
@@ -44,10 +43,9 @@ class Agent:
 
         model.add(Dense(24, activation='relu'))
         model.add(Dense(self.action_size, activation='softmax'))
-        parallel_model = multi_gpu_model(model, gpus=2)
-        parallel_model.compile(loss = 'categorical_crossentropy', optimizer = Adam(lr = self.learning_rate))
+        model.compile(loss = 'categorical_crossentropy', optimizer = Adam(lr = self.learning_rate))
 
-        return parallel_model
+        return model
 
 
     def append_experience_replay_example(self, experience_replay_example):
@@ -173,7 +171,7 @@ def run_simulation():
         obsProc = agent.preprocess_observation(obs)
 
         while True:
-            ENV.render()
+            #ENV.render()
             # OBS = agent.preprocess_observation(OBS)
             # ensure that S_LIST is populated with PHI_LENGTH frames
             """
