@@ -172,8 +172,8 @@ def run_simulation():
 
         while True:
             #ENV.render()
-            # OBS = agent.preprocess_observation(OBS)
-            # ensure that S_LIST is populated with PHI_LENGTH frames
+            #OBS = agent.preprocess_observation(OBS)
+            #ensure that S_LIST is populated with PHI_LENGTH frames
             """
             if TOT_FRAMES < PHI_LENGTH:
                 S_LIST.append(agent.preprocess_observation(OBS))
