@@ -10,6 +10,7 @@ from keras.layers import Dense, MaxPooling2D, Conv2D, Flatten
 from keras.optimizers import Adam
 from collections import deque
 import matplotlib.pyplot as plt
+from keras.utils import multi_gpu_model
 
 class Agent:
         #
@@ -31,20 +32,22 @@ class Agent:
 
     def create_model(self):
         model = Sequential()
-        model.add(Conv2D(32, (5,5),input_shape=(1,84,84), strides=(1,1), padding='same', data_format='channels_first', activation='relu', use_bias=True, bias_initializer='zeros'))
-        # model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
+        model.add(Conv2D(32, (3,3),input_shape=(1,84,84), strides=(1,1), padding='same', data_format='channels_first', activation='relu', use_bias=True, bias_initializer='zeros'))
+        model.add(Conv2D(32, (3,3),input_shape=(1,84,84), strides=(1,1), padding='same', data_format='channels_first', activation='relu', use_bias=True, bias_initializer='zeros'))
+        model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
 
-        model.add(Conv2D(32, (5,5), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
-        # model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
+        model.add(Conv2D(32, (3,3), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
+        model.add(Conv2D(32, (3,3), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
+        model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
 
         model.add(Flatten())
 
         model.add(Dense(24, activation='relu'))
-        model.add(Dense(24,activation='relu'))
         model.add(Dense(self.action_size, activation='softmax'))
-        model.compile(loss = 'categorical_crossentropy', optimizer = Adam(lr = self.learning_rate))
+        parallel_model = multi_gpu_model(model, gpus=2)
+        parallel_model.compile(loss = 'categorical_crossentropy', optimizer = Adam(lr = self.learning_rate))
 
-        return model
+        return parallel_model
 
 
     def append_experience_replay_example(self, experience_replay_example):
@@ -187,10 +190,6 @@ def run_simulation():
             #print(ACTION)
 
             newObs, REWARD, DONE, INFO = ENV.step(ACTION) # NEXT_OBS is a numpy.ndarray of shape(210,160,3)
-            #print(env.action_space)
-            #print(env.observation_space)
-            #print(env.observation_space.high)
-            #print(env.observation_space.low)
             # LIVES = LIVES.get('ale.lives')
             # Calculation of Reward
 
