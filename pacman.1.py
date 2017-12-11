@@ -35,13 +35,13 @@ class Agent:
         model.add(Conv2D(32, (3,3),input_shape=(1,84,84), strides=(1,1), padding='same', data_format='channels_first', activation='relu', use_bias=True, bias_initializer='zeros'))
         #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
 
-        #model.add(Conv2D(32, (3,3), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
+        model.add(Conv2D(32, (3,3), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
         model.add(Conv2D(32, (3,3), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
         #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
 
         model.add(Flatten())
 
-        model.add(Dense(24, activation='relu'))
+        #model.add(Dense(24, activation='relu'))
         model.add(Dense(24, activation='relu'))
         model.add(Dense(self.action_size, activation='tanh'))
         model.compile(loss = 'categorical_crossentropy', optimizer = Adam(lr = self.learning_rate))
@@ -142,7 +142,7 @@ PHI_LENGTH = 4
 NAIVE_RANDOM = False
 EPSILON = 1.0
 GAMMA = 0.95
-EXPERIENCE_REPLAY_CAPACITY = 1000
+EXPERIENCE_REPLAY_CAPACITY = 10000
 MINIBATCH_SIZE = 70
 LEARNING_RATE = 0.2
 PREPROCESS_IMAGE_DIM = 84
@@ -157,6 +157,8 @@ def run_simulation():
     ENV = gym.make(GAME_TYPE)
     ACTION_SIZE = ENV.action_space.n
     DONE = False
+    bestPerformance = 0
+    bestPerformanceReward = 0
 
     #print game parameters
     print ("~~~Environment Parameters~~~")
@@ -190,7 +192,7 @@ def run_simulation():
         REWARD = 0
         oldREWARD=0
         shortMemory = []
-        EPISODE_PERFORMANCE = 0 
+        EPISODE_PERFORMANCE = -99999 
         start=False
         while True:
             ENV.render()
@@ -219,7 +221,6 @@ def run_simulation():
                 if oldREWARD <0:
                     REWARD = 0
                     oldREWARD = 0
-                    shortMemory = []
                 oldREWARD += 1
                 REWARD = 1
                 step = 1
@@ -228,7 +229,6 @@ def run_simulation():
                 step +=1 
                 if (step%8 == 0):
                     if oldREWARD >0 :
-                        shortMemory = []
                         REWARD = 0
                         oldREWARD = 0 
                     oldREWARD += -1
@@ -245,24 +245,14 @@ def run_simulation():
             EREG = [obsProc, ACTION, REWARD, newObsProc, DONE]
             #print(EREG)
 
-            agent.append_experience_replay_example(EREG)
             shortMemory.append(EREG)
 
             obsProc = newObsProc
 
-            if (((oldREWARD > 5 ) & (REWARD > 0)) | ((oldREWARD == -10) & (REWARD < 0))) & start:   
-                print(str(REWARD) + " + " + str(len(shortMemory)))
-                oldREWARD = 0
-                print("shortLearn")
-                for i in range(len(shortMemory)):
-                    shortMemory[i][2] = REWARD
-                    agent.append_experience_replay_example(shortMemory[i])
-                agent.shortLearn(shortMemory)
-
             if DONE:
                 print("DEADLearn " + str(len(shortMemory)))
                 dead= []
-                for i in range(min(20,len(shortMemory))):
+                for i in range(min(30,len(shortMemory))):
                     er = shortMemory.pop()
                     er[2]= -100
                     dead.append(er)
@@ -280,8 +270,19 @@ def run_simulation():
 
         if (i_episode%5==0):
             SCORE_LIST.append(EPISODE_REWARD)
-        if (len(agent.memory)>agent.minibatch_size):
-            agent.learn()
+        if (bestPerformance <= EPISODE_PERFORMANCE):
+            bestPerformance = EPISODE_PERFORMANCE
+            bestPerformanceReward += 2
+            for i in range(len(shortMemory)):
+                shortMemory[i][2] = bestPerformanceReward
+                agent.append_experience_replay_example(shortMemory[i])
+            agent.shortLearn(shortMemory)
+        else:
+            for i in range(len(shortMemory)):
+                shortMemory[i][2] = -1
+                agent.append_experience_replay_example(shortMemory[i])
+            agent.shortLearn(shortMemory)
+
 
 def plot_rewards(score_list, episode_num):
     episode_num = [x for x in range(0,episode_num,5)]
