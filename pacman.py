@@ -220,11 +220,14 @@ def run_simulation():
                 REWARD = oldREWARD 
                 step = 1
             else:
+                REWARD = 0
                 step +=1  
                 if (step%10 == 0):
-                    oldREWARD =0
-                    REWARD += -10 
-                if REWARD <0 :
+                    if oldREWARD > 0  :
+                        oldREWARD =0
+                    oldREWARD += -10
+                    REWARD += oldREWARD
+                if REWARD >0 :
                     shortMemory = []
                     REWARD = 0
                        
@@ -245,7 +248,7 @@ def run_simulation():
 
             obsProc = newObsProc
 
-            if ((REWARD > 40) | REWARD < 40):
+            if ((REWARD > 40) | (REWARD < -80)):
                 print(str(REWARD)+" + "+str(len(shortMemory)))
                 print("shortLearn")
                 agent.shortLearn(shortMemory)
