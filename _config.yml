@@ -1,0 +1,21 @@
+theme: jekyll-theme-cayman
+ 
+# Setup
+title:        [DLAI Project Team 6 2017]
+description: [Ms.PACMAN with Deep Learning]
+google_analytics: [UA-54473427-1]
+baseurl:      ""
+paginate:     1
+values:
+      layout: single
+
+# Gems
+gems:
+  - jekyll-paginate
+
+#Others
+markdown: kramdown  
+
+include: ["_pages"]
+
+
