@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 class Agent:
         #
-    def __init__(self,action_size,epsilon=1.0,experience_replay_capacity=1000,minibatch_size=32,learning_rate=0.01,gamma=0.95,preprocess_image_dim=84):
+    def __init__(self,action_size,epsilon=1.0,experience_replay_capacity=1000,minibatch_size=32,learning_rate=0.1,gamma=0.95,preprocess_image_dim=84):
         self.action_size = action_size
         self.epsilon = epsilon
         self.experience_replay_capacity = experience_replay_capacity
@@ -25,7 +25,7 @@ class Agent:
         self.memory = []
         self.ere_counter = 0
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.99
+        self.epsilon_decay = 0.92
         self.model = self.create_model()
 
 
@@ -42,7 +42,8 @@ class Agent:
         model.add(Flatten())
 
         model.add(Dense(24, activation='relu'))
-        model.add(Dense(self.action_size, activation='softmax'))
+        model.add(Dense(24, activation='relu'))
+        model.add(Dense(self.action_size, activation='tanh'))
         model.compile(loss = 'categorical_crossentropy', optimizer = Adam(lr = self.learning_rate))
 
         return model
@@ -108,6 +109,22 @@ class Agent:
             self.model.fit(obs, target_f, epochs=1, verbose=0)
         if (self.epsilon > self.epsilon_min):
             self.epsilon *= self.epsilon_decay
+
+    def shortLearn(self, shortMemory):
+        """
+        Allow the model to collect examples from its experience replay memory
+        and learn from them
+        """
+        minibatch = shortMemory
+        for obs, action, reward, next_obs, done in minibatch:
+            obs = np.reshape(np.array(obs),[1,1,self.preprocess_image_dim,self.preprocess_image_dim])
+            next_obs = np.reshape(np.array(next_obs),[1,1,self.preprocess_image_dim,self.preprocess_image_dim])
+            target = reward
+            if not done:
+                target = reward + self.gamma*np.amax(self.model.predict(next_obs)[0])
+            target_f = self.model.predict(obs)
+            target_f[0][action] = target
+            self.model.fit(obs, target_f, epochs=1, verbose=0)
     
 #####
 # Hyperparameters
@@ -127,7 +144,7 @@ EPSILON = 1.0
 GAMMA = 0.95
 EXPERIENCE_REPLAY_CAPACITY = 1000
 MINIBATCH_SIZE = 32
-LEARNING_RATE = 0.1
+LEARNING_RATE = 0.2
 PREPROCESS_IMAGE_DIM = 84
 SCORE_LIST = []
 
@@ -169,9 +186,12 @@ def run_simulation():
         EPISODE_REWARD = 0
         time = 0
         obsProc = agent.preprocess_observation(obs)
-
+        step = 1
+        REWARD = 0
+        oldREWARD=0
+        shortMemory = []
         while True:
-            #ENV.render()
+            ENV.render()
             #OBS = agent.preprocess_observation(OBS)
             #ensure that S_LIST is populated with PHI_LENGTH frames
             """
@@ -187,12 +207,32 @@ def run_simulation():
             ACTION = agent.take_action(obsProc)
             #print(ACTION)
 
-            newObs, REWARD, DONE, INFO = ENV.step(ACTION) # NEXT_OBS is a numpy.ndarray of shape(210,160,3)
+            newObs, newREWARD, DONE, INFO = ENV.step(ACTION) # NEXT_OBS is a numpy.ndarray of shape(210,160,3)
             # LIVES = LIVES.get('ale.lives')
             # Calculation of Reward
+            #EPISODE_REWARD += newREWARD
 
-            #if (time%50==0):
-                #print(REWARD)
+            if (newREWARD!=0):
+                if REWARD <0 :
+                    REWARD = 0
+                    shortMemory = []
+                oldREWARD += newREWARD 
+                REWARD = oldREWARD 
+                step = 1
+            else:
+                step +=1  
+                if (step%10 == 0):
+                    oldREWARD =0
+                    REWARD += -10 
+                if REWARD <0 :
+                    shortMemory = []
+                    REWARD = 0
+                       
+            '''
+            if (1):
+                print(REWARD)
+            '''
+            EPISODE_REWARD +=REWARD
 
             #print(NEXT_OBS, REWARD, DONE,'\n\n\n\n\n\n\n\n')
             newObsProc = agent.preprocess_observation(newObs) # shape(1,84,84)
@@ -201,8 +241,15 @@ def run_simulation():
             #print(EREG)
 
             agent.append_experience_replay_example(EREG)
+            shortMemory.append(EREG)
 
             obsProc = newObsProc
+
+            if ((REWARD > 40) | REWARD < 40):
+                print(str(REWARD)+" + "+str(len(shortMemory)))
+                print("shortLearn")
+                agent.shortLearn(shortMemory)
+
             if DONE:
                 print("episode:{}/{}, score: {}, e = {}".format(i_episode, NUM_EPISODES, EPISODE_REWARD, agent.epsilon))
                 break
@@ -212,7 +259,7 @@ def run_simulation():
             S_LIST.append(agent.preprocess_observation(OBS))
             S_LIST.pop(0)
             """
-            EPISODE_REWARD += REWARD
+            
             time += 1
 
         if (i_episode%5==0):
