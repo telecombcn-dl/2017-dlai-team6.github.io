@@ -42,7 +42,7 @@ class Agent:
         model.add(Flatten())
 
         #model.add(Dense(24, activation='relu'))
-        model.add(Dense(24, activation='relu'))
+        #model.add(Dense(24, activation='relu'))
         model.add(Dense(self.action_size, activation='tanh'))
         model.compile(loss = 'categorical_crossentropy', optimizer = Adam(lr = self.learning_rate))
 
@@ -134,7 +134,7 @@ class Agent:
 GAME_TYPE = 'MsPacman-v0'
 
 #environment parameters
-NUM_EPISODES = 50
+NUM_EPISODES = 120
 MAX_TIMESTEPS = 5
 FRAME_SKIP = 2
 PHI_LENGTH = 4
@@ -143,9 +143,9 @@ PHI_LENGTH = 4
 NAIVE_RANDOM = False
 EPSILON = 1.0
 GAMMA = 0.95
-EXPERIENCE_REPLAY_CAPACITY = 10000
+EXPERIENCE_REPLAY_CAPACITY = 1000
 MINIBATCH_SIZE = 70
-LEARNING_RATE = 0.2
+LEARNING_RATE = 0.1
 PREPROCESS_IMAGE_DIM = 84
 SCORE_LIST = []
 
@@ -197,7 +197,7 @@ def run_simulation():
         EPISODE_PERFORMANCE = 0 
         start=False
         while True:
-            ENV.render()
+            #ENV.render()
             #OBS = agent.preprocess_observation(OBS)
             #ensure that S_LIST is populated with PHI_LENGTH frames
             """
@@ -224,17 +224,18 @@ def run_simulation():
                     REWARD = 0
                     oldREWARD = 0
                 oldREWARD += 1
-                REWARD = 1
+                REWARD = 2
                 step = 1
             else:
                 REWARD = 0
                 step +=1 
-                if (step%8 == 0):
+                if (step%10 == 0):
                     if oldREWARD >0 :
                         REWARD = 0
                         oldREWARD = 0 
                     oldREWARD += -1
                     REWARD = -1
+
             EPISODE_PERFORMANCE += REWARD          
             '''
             if (1):
@@ -269,13 +270,14 @@ def run_simulation():
             """
             
             time += 1
-
+        EPISODE_PERFORMANCE + EPISODE_REWARD/time*100
         if (i_episode%5==0):
             SCORE_LIST.append(EPISODE_REWARD)
 
         if (bestReward <= EPISODE_REWARD):
             print("best reward")
             bestReward = EPISODE_REWARD
+            bestPerformance = EPISODE_PERFORMANCE
             bestPerformanceReward += 2
             for i in range(len(shortMemory)):
                 shortMemory[i][2] = bestPerformanceReward*10
@@ -285,7 +287,7 @@ def run_simulation():
         elif (bestPerformance <= EPISODE_PERFORMANCE):
             print("best performance")
             bestPerformance = EPISODE_PERFORMANCE
-            bestPerformanceReward += 2        
+            bestPerformanceReward += 10        
             for i in range(len(shortMemory)):
                 shortMemory[i][2] = bestPerformanceReward
                 agent.append_experience_replay_example(shortMemory[i])
@@ -293,7 +295,10 @@ def run_simulation():
 
         else:
             print("worse performance")
-
+            bestPerformance += -5
+            bestReward += -10
+            bestPerformanceReward += -1
+            
             for i in range(len(shortMemory)):
                 shortMemory[i][2] += -bestPerformanceReward
                 agent.append_experience_replay_example(shortMemory[i])
