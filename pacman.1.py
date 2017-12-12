@@ -304,7 +304,7 @@ def run_simulation():
 def plot_rewards(score_list, episode_num):
     episode_num = [x for x in range(0,episode_num,5)]
     plt.plot(episode_num, score_list)
-    plt.show()
+    plt.savefig('results_pacman1.png')
 
 run_simulation()
 plot_rewards(SCORE_LIST, NUM_EPISODES)
