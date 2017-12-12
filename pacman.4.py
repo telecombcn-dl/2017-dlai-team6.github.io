@@ -270,7 +270,7 @@ def run_simulation():
             """
             
             time += 1
-        EPISODE_PERFORMANCE + EPISODE_REWARD/time*100
+        EPISODE_PERFORMANCE =+ EPISODE_REWARD/time*10
 
         SCORE_LIST.append(EPISODE_REWARD)
 

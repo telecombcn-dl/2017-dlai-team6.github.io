@@ -35,7 +35,7 @@ class Agent:
         model.add(Conv2D(32, (3,3),input_shape=(1,84,84), strides=(1,1), padding='same', data_format='channels_first', activation='relu', use_bias=True, bias_initializer='zeros'))
         #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
 
-        model.add(Conv2D(32, (3,3), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
+        model.add(Conv2D(32, (6,6), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
         #model.add(Conv2D(32, (3,3), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
         #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
 
@@ -145,7 +145,7 @@ EPSILON = 1.0
 GAMMA = 0.95
 EXPERIENCE_REPLAY_CAPACITY = 1000
 MINIBATCH_SIZE = 70
-LEARNING_RATE = 0.4
+LEARNING_RATE = 0.05
 PREPROCESS_IMAGE_DIM = 84
 SCORE_LIST = []
 
@@ -224,19 +224,20 @@ def run_simulation():
                     REWARD = 0
                     oldREWARD = 0
                 oldREWARD += 1
-                REWARD = 2
+                REWARD = 10
                 step = 1
             else:
                 REWARD = 0
                 step +=1 
                 if (step%10 == 0):
-                    if oldREWARD >0 :
+                    if oldREWARD > 0 :
                         REWARD = 0
                         oldREWARD = 0 
-                    oldREWARD += -1
-                    REWARD = -1
+                    oldREWARD += -2
+                    REWARD = -2
 
             EPISODE_PERFORMANCE += REWARD          
+
             '''
             if (1):
                 print(REWARD)
@@ -255,9 +256,9 @@ def run_simulation():
             if DONE:
                 print("DEADLearn " + str(len(shortMemory)))
                 dead= []
-                for i in range(min(30,len(shortMemory))):
+                for i in range(min(2,len(shortMemory))):
                     er = shortMemory.pop()
-                    er[2]= -100
+                    er[2]= -1000
                     dead.append(er)
                 agent.shortLearn(dead)
                 print("episode:{}/{}, score: {}, performance {}, e = {}".format(i_episode, NUM_EPISODES, EPISODE_REWARD,EPISODE_PERFORMANCE, agent.epsilon))
@@ -270,7 +271,6 @@ def run_simulation():
             """
             
             time += 1
-        EPISODE_PERFORMANCE =+ EPISODE_REWARD/time*10
 
         SCORE_LIST.append(EPISODE_REWARD)
 
@@ -295,7 +295,7 @@ def run_simulation():
 '''
 
 def plot_rewards(score_list, episode_num):
-    thefile = open('pacman5.txt', 'w')
+    thefile = open('pacman6.txt', 'w')
     for item in score_list:
         thefile.write("%s\n" % item)
     thefile.close()
