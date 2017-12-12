@@ -5,7 +5,7 @@ import gym
 from skimage import io, color, transform
 import numpy as np
 import random
-from keras.models import Sequential
+from keras.models import Sequential 
 from keras.layers import Dense,MaxPooling2D,Conv2D,Flatten
 from keras.optimizers import Adam
 from collections import deque
@@ -25,7 +25,7 @@ class Agent:
         self.memory = []
         self.ere_counter = 0
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.99
+        self.epsilon_decay = 0.97
         self.model = self.create_model()
 
 
@@ -115,7 +115,7 @@ class Agent:
 GAME_TYPE = 'MsPacman-v0'
 
 #environment parameters
-NUM_EPISODES = 500
+NUM_EPISODES = 120
 MAX_TIMESTEPS = 5
 FRAME_SKIP = 2
 PHI_LENGTH = 4
@@ -219,9 +219,10 @@ def run_simulation():
             agent.learn()
 
 def plot_rewards(score_list, episode_num):
-    episode_num = [x for x in range(0,episode_num,5)]
-    plt.plot(episode_num, score_list)
-    plt.show()
+    thefile = open('pacmanOriginal.txt', 'w')
+    for item in score_list:
+        thefile.write("%s\n" % item)
+    thefile.close()
 
 run_simulation()
 plot_rewards(SCORE_LIST, NUM_EPISODES)

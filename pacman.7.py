@@ -39,7 +39,7 @@ class Agent:
         #model.add(Conv2D(32, (3,3), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
         model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
 
-        model.add(Flatten())
+        #model.add(Flatten())
 
         #model.add(Dense(24, activation='relu'))
         #model.add(Dense(24, activation='relu'))
