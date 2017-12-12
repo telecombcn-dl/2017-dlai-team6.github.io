@@ -33,11 +33,11 @@ class Agent:
         model = Sequential()
         model.add(Conv2D(32, (3,3),input_shape=(1,84,84), strides=(1,1), padding='same', data_format='channels_first', activation='relu', use_bias=True, bias_initializer='zeros'))
         model.add(Conv2D(32, (3,3),input_shape=(1,84,84), strides=(1,1), padding='same', data_format='channels_first', activation='relu', use_bias=True, bias_initializer='zeros'))
-        #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
+        model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
 
         model.add(Conv2D(32, (6,6), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
         #model.add(Conv2D(32, (3,3), strides=(1,1), padding='same', data_format=None, activation='relu', use_bias=True, bias_initializer='zeros'))
-        #model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
+        model.add(MaxPooling2D(pool_size=(2, 2), strides=(2,2), padding='valid', data_format=None))
 
         model.add(Flatten())
 
@@ -97,7 +97,7 @@ class Agent:
         Allow the model to collect examples from its experience replay memory
         and learn from them
         """
-        minibatch = random.sample(shortMemory, int(len(shortMemory)*0.2))
+        minibatch = random.sample(shortMemory, int(len(shortMemory)*0.3))
         for obs, action, reward, next_obs, done in minibatch:
             obs = np.reshape(np.array(obs),[1,1,self.preprocess_image_dim,self.preprocess_image_dim])
             next_obs = np.reshape(np.array(next_obs),[1,1,self.preprocess_image_dim,self.preprocess_image_dim])
