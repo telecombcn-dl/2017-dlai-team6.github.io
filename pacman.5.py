@@ -25,7 +25,7 @@ class Agent:
         self.memory = []
         self.ere_counter = 0
         self.epsilon_min = 0.01
-        self.epsilon_decay = 0.96
+        self.epsilon_decay = 0.98
         self.model = self.create_model()
 
 
@@ -274,24 +274,12 @@ def run_simulation():
         if (i_episode%5==0):
             SCORE_LIST.append(EPISODE_REWARD)
 
-        if (bestReward <= EPISODE_REWARD):
-            print("best reward")
-            bestReward = EPISODE_REWARD
-            bestPerformance = EPISODE_PERFORMANCE
-            bestPerformanceReward += 2
-            for i in range(len(shortMemory)):
-                shortMemory[i][2] = bestPerformanceReward*10
-                agent.append_experience_replay_example(shortMemory[i])
-            agent.learn(shortMemory)
-
-        elif (bestPerformance <= EPISODE_PERFORMANCE):
-            print("best performance")
-            bestPerformance = EPISODE_PERFORMANCE
-            bestPerformanceReward += 10        
-            for i in range(len(shortMemory)):
-                shortMemory[i][2] = bestPerformanceReward
-                agent.append_experience_replay_example(shortMemory[i])
-            agent.learn(shortMemory)
+        print("reward")
+        for i in range(len(shortMemory)):
+            shortMemory[i][2] = EPISODE_PERFORMANCE
+            agent.append_experience_replay_example(shortMemory[i])
+        agent.learn(shortMemory)
+            
 '''
         else:
             print("worse performance")
@@ -307,7 +295,7 @@ def run_simulation():
 '''
 
 def plot_rewards(score_list, episode_num):
-    thefile = open('pacman4.txt', 'w')
+    thefile = open('pacman5.txt', 'w')
     for item in score_list:
         thefile.write("%s\n" % item)
     thefile.close()
