@@ -250,7 +250,7 @@ def run_simulation():
 
             obsProc = newObsProc
 
-            if (((oldREWARD > 5 ) & (REWARD > 0)) & start):   
+            if (((oldREWARD > 2 ) & (REWARD > 0)) & start):   
                 print(str(REWARD) + " + " + str(len(shortMemory)))
                 oldREWARD = 0
                 print("shortLearn")
@@ -284,9 +284,10 @@ def run_simulation():
             agent.learn()
 
 def plot_rewards(score_list, episode_num):
-    episode_num = [x for x in range(0,episode_num,5)]
-    plt.plot(episode_num, score_list)
-    plt.show()
+    thefile = open('pacman3.txt', 'w')
+    for item in score_list:
+        thefile.write("%s\n" % item)
+    thefile.close()
 
 run_simulation()
 plot_rewards(SCORE_LIST, NUM_EPISODES)

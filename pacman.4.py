@@ -307,7 +307,7 @@ def run_simulation():
 '''
 
 def plot_rewards(score_list, episode_num):
-    thefile = open('python2.txt', 'w')
+    thefile = open('pacman4.txt', 'w')
     for item in score_list:
         thefile.write("%s\n" % item)
     thefile.close()
