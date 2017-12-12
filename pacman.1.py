@@ -134,7 +134,7 @@ class Agent:
 GAME_TYPE = 'MsPacman-v0'
 
 #environment parameters
-NUM_EPISODES = 50
+NUM_EPISODES = 120
 MAX_TIMESTEPS = 5
 FRAME_SKIP = 2
 PHI_LENGTH = 4
