@@ -278,15 +278,17 @@ def run_simulation():
             
             time += 1
 
-        if (i_episode%5==0):
-            SCORE_LIST.append(EPISODE_REWARD)
+        
+        SCORE_LIST.append(EPISODE_REWARD)
+        
         if (len(agent.memory)>agent.minibatch_size):
             agent.learn()
 
 def plot_rewards(score_list, episode_num):
-    episode_num = [x for x in range(0,episode_num,5)]
-    plt.plot(episode_num, score_list)
-    plt.show()
+    thefile = open('pacman.txt', 'w')
+    for item in score_list:
+        thefile.write("%s\n" % item)
+    thefile.close()
 
 run_simulation()
 plot_rewards(SCORE_LIST, NUM_EPISODES)

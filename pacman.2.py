@@ -271,8 +271,8 @@ def run_simulation():
             
             time += 1
         EPISODE_PERFORMANCE + EPISODE_REWARD/time*100
-        if (i_episode%5==0):
-            SCORE_LIST.append(EPISODE_REWARD)
+
+        SCORE_LIST.append(EPISODE_REWARD)
 
         if (bestReward <= EPISODE_REWARD):
             print("best reward")
