@@ -307,9 +307,10 @@ def run_simulation():
 
 
 def plot_rewards(score_list, episode_num):
-    episode_num = [x for x in range(0,episode_num,5)]
-    plt.plot(episode_num, score_list)
-    plt.savefig('results_pacman2.png')
+    thefile = open('python2.txt', 'w')
+    for item in score_list:
+        thefile.write("%s\n" % item)
+    thefile.close()
 
 run_simulation()
 plot_rewards(SCORE_LIST, NUM_EPISODES)
